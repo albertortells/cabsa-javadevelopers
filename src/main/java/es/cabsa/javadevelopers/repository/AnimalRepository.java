@@ -9,7 +9,7 @@ import java.util.ArrayList;
 @Repository
 public interface AnimalRepository extends JpaRepository<AnimalEntity, Integer> {
 
-	ArrayList<AnimalEntity> getAllAnimals();
+	ArrayList<AnimalEntity> findAll();
 
 	AnimalEntity getAnimalEntityByIdFood(Integer id);
 

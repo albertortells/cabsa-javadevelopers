@@ -25,10 +25,9 @@ public class AnimalServiceImpl implements AnimalService {
 	@Override
 	public ApiResponse getAllAnimalsAndFood() {
 		ApiResponse response = new ApiResponse();
-		AnimalDto dto = new AnimalDto();
 		ArrayList<AnimalDto> animalList = new ArrayList<>();
 
-		ArrayList<AnimalEntity> animals = animalRepository.getAllAnimals();
+		ArrayList<AnimalEntity> animals = animalRepository.findAll();
 
 		if(animals == null || animals.isEmpty()) {
 			response.setStatus(404);
@@ -39,6 +38,7 @@ public class AnimalServiceImpl implements AnimalService {
 		for(AnimalEntity animal : animals) {
 			FoodEntity food = foodRepository.getFoodEntityById(animal.getIdFood());
 
+			AnimalDto dto = new AnimalDto();
 			dto.setName(animal.getName());
 			dto.setLegs(animal.getLegs());
 			dto.setFood(food.getName());

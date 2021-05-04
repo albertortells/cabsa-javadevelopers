@@ -1,15 +1,23 @@
 package es.cabsa.javadevelopers.data.entity;
 
+import javax.persistence.*;
 import java.io.Serializable;
 
+@Entity
+@Table(name = "animal", schema = "jungle")
 public class AnimalEntity implements Serializable {
 
+	@Id
+	@Column(name = "id", nullable = false, updatable = false)
 	private Integer id;
 
+	@Column(name = "name")
 	private String name;
 
+	@Column(name = "legs")
 	private Integer legs;
 
+	@Column(name = "food")
 	private Integer idFood;
 
 	public AnimalEntity() { }
