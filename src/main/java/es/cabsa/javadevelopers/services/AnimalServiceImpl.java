@@ -120,7 +120,8 @@ public class AnimalServiceImpl implements AnimalService {
 		int status = 400;
 		String message = "No se ha podido guardar la información.";
 
-		FoodEntity foodEntity = new FoodEntity(food);
+		FoodEntity foodEntity = new FoodEntity();
+		foodEntity.setName(food);
 
 		FoodEntity saved = foodRepository.save(foodEntity);
 

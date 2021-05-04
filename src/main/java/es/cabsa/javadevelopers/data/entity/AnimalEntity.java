@@ -8,7 +8,7 @@ import java.io.Serializable;
 public class AnimalEntity implements Serializable {
 
 	@Id
-	@Column(name = "id", nullable = false, updatable = false)
+	@Column(name = "id", updatable = false)
 	private Integer id;
 
 	@Column(name = "name")
