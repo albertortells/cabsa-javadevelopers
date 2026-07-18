@@ -29,13 +29,13 @@ public class AnimalServiceImpl implements AnimalService {
 
 		ArrayList<AnimalEntity> animals = animalRepository.findAll();
 
-		if(animals == null || animals.isEmpty()) {
+		if (animals == null || animals.isEmpty()) {
 			response.setStatus(404);
 			response.setMessage("Animales no encontrados.");
 			return response;
 		}
 
-		for(AnimalEntity animal : animals) {
+		for (AnimalEntity animal : animals) {
 			FoodEntity food = foodRepository.getFoodEntityById(animal.getIdFood());
 
 			AnimalDto dto = new AnimalDto();
@@ -55,62 +55,23 @@ public class AnimalServiceImpl implements AnimalService {
 
 	@Override
 	public ApiResponse findAnimalsByNameOrFood(String animal, String food) {
-		ApiResponse response = new ApiResponse();
-		AnimalDto dto = new AnimalDto();
-		AnimalEntity animalEntity = new AnimalEntity();
-		FoodEntity foodEntity = new FoodEntity();
+		boolean hasAnimal = !animal.isEmpty();
+		boolean hasFood = !food.isEmpty();
 
-		boolean nullEntities = false;
-		int status = 404;
-		String message = "Datos no encontrados.";
+		AnimalEntity animalEntity = hasAnimal ? animalRepository.getAnimalEntityByName(animal) : null;
+		FoodEntity foodEntity = hasFood ? foodRepository.getFoodEntityByName(food) : null;
 
-		if(animal.isEmpty() && !food.isEmpty()) {
-			foodEntity = foodRepository.getFoodEntityByName(food);
-
-			nullEntities = checkNullEntities(foodEntity);
-			if(!nullEntities) {
-				animalEntity = animalRepository.getAnimalEntityByIdFood(foodEntity.getId());
-
-				nullEntities = checkNullEntities(animalEntity);
-				if(!nullEntities) {
-					status = 200;
-					message = "OK";
-					dto = returnDto(animalEntity, foodEntity);
-				}
-			}
-
-
-		} else if(!animal.isEmpty() && food.isEmpty()) {
-			animalEntity = animalRepository.getAnimalEntityByName(animal);
-
-			nullEntities = checkNullEntities(animalEntity);
-			if(!nullEntities) {
-				foodEntity = foodRepository.getFoodEntityById(animalEntity.getIdFood());
-
-				nullEntities = checkNullEntities(foodEntity);
-				if(!nullEntities) {
-					status = 200;
-					message = "OK";
-					dto = returnDto(animalEntity, foodEntity);
-				}
-			}
-		} else {
-			animalEntity = animalRepository.getAnimalEntityByName(animal);
-			foodEntity = foodRepository.getFoodEntityByName(food);
-
-			if(!checkNullEntities(animalEntity) || !checkNullEntities(foodEntity)) {
-				status = 200;
-				message = "OK";
-				dto = returnDto(animalEntity, foodEntity);
-			}
-
+		if (!hasAnimal && foodEntity != null) {
+			animalEntity = animalRepository.getAnimalEntityByIdFood(foodEntity.getId());
+		} else if (!hasFood && animalEntity != null) {
+			foodEntity = foodRepository.getFoodEntityById(animalEntity.getIdFood());
 		}
 
-		response.setStatus(status);
-		response.setMessage(message);
-		response.setData(dto);
+		if (animalEntity == null || foodEntity == null) {
+			return new ApiResponse(404, "Datos no encontrados.");
+		}
 
-		return response;
+		return new ApiResponse(200, "OK", returnDto(animalEntity, foodEntity));
 	}
 
 	@Override
@@ -126,7 +87,7 @@ public class AnimalServiceImpl implements AnimalService {
 		FoodEntity saved = foodRepository.save(foodEntity);
 
 		boolean nullEntities = checkNullEntities(saved);
-		if(!nullEntities) {
+		if (!nullEntities) {
 			status = 200;
 			message = "OK";
 		}
@@ -140,7 +101,9 @@ public class AnimalServiceImpl implements AnimalService {
 	private boolean checkNullEntities(Object obj) {
 		boolean check = false;
 
-		if(Objects.isNull(obj)){ check = true; }
+		if (Objects.isNull(obj)) {
+			check = true;
+		}
 
 		return check;
 	}
